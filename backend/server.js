@@ -4,7 +4,7 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
-
+const path = require('path');
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -17,6 +17,8 @@ const io = new Server(server, {
 app.use(cors());
 
 const PORT = process.env.PORT || 5000;
+
+const ___dirname = path.resolve();
 
 io.on('connection', (socket) => {
     console.log(`User connected: ${socket.id}`);
@@ -40,3 +42,11 @@ io.on('connection', (socket) => {
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
+
+app.use(express.static(path.join(___dirname, '/frontend/dist')));
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(___dirname, '/frontend/dist/index.html'));
+});
+
